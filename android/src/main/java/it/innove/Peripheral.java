@@ -115,12 +115,45 @@ public class Peripheral extends BluetoothGattCallback {
 			map.putString("name", device.getName());
 			map.putString("id", device.getAddress()); // mac address
 			map.putMap("advertising", byteArrayToWritableMap(advertisingData));
+			map.putArray("services", toWritableArray(device.getUuids()));
 			map.putInt("rssi", advertisingRSSI);
 		} catch (Exception e) { // this shouldn't happen
 			e.printStackTrace();
 		}
 
 		return map;
+	}
+
+	public WritableArray toWritableArray(Object[] array) {
+		WritableArray writableArray = Arguments.createArray();
+
+		for (int i = 0; i < array.length; i++) {
+			Object value = array[i];
+
+			if (value == null) {
+				writableArray.pushNull();
+			}
+			if (value instanceof Boolean) {
+				writableArray.pushBoolean((Boolean) value);
+			}
+			if (value instanceof Double) {
+				writableArray.pushDouble((Double) value);
+			}
+			if (value instanceof Integer) {
+				writableArray.pushInt((Integer) value);
+			}
+			if (value instanceof String) {
+				writableArray.pushString((String) value);
+			}
+			if (value.getClass().isArray()) {
+				writableArray.pushArray(toWritableArray((Object[]) value));
+			}
+			else {
+				writableArray.pushString(value.toString());
+			}
+		}
+
+		return writableArray;
 	}
 
 	public WritableMap asWritableMap(BluetoothGatt gatt) {
