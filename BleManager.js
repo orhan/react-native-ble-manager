@@ -64,7 +64,7 @@ class BleManager  {
       maxByteSize = 20;
     }
     if (queueSleepTime == null) {
-      queueSleepTime = 10
+      queueSleepTime = 10;
     }
     return new Promise((fulfill, reject) => {
       bleManager.writeWithoutResponse(peripheralId, serviceUUID, characteristicUUID, data, maxByteSize, queueSleepTime, (error) => {
@@ -92,6 +92,18 @@ class BleManager  {
   createBond(peripheralId) {
     return new Promise((fulfill, reject) => {
       bleManager.createBond(peripheralId, (error) => {
+        if (error) {
+          reject(error);
+        } else {
+          fulfill();
+        }
+      });
+    });
+  }
+
+  removeBond(peripheralId) {
+    return new Promise((fulfill, reject) => {
+      bleManager.removeBond(peripheralId, (error) => {
         if (error) {
           reject(error);
         } else {
@@ -164,18 +176,18 @@ class BleManager  {
 
       // (ANDROID) Match as many advertisement per filter as hw could allow
       // dependes on current capability and availability of the resources in hw.
-      if(scanningOptions.numberOfMatches == null){
-          scanningOptions.numberOfMatches = 3
+      if (scanningOptions.numberOfMatches == null) {
+        scanningOptions.numberOfMatches = 3;
       }
 
-      //(ANDROID) Defaults to MATCH_MODE_AGGRESSIVE
-      if(scanningOptions.matchMode == null){
-          scanningOptions.matchMode = 1
+      // (ANDROID) Defaults to MATCH_MODE_AGGRESSIVE
+      if (scanningOptions.matchMode == null) {
+        scanningOptions.matchMode = 1;
       }
 
-      //(ANDROID) Defaults to SCAN_MODE_LOW_POWER on android
-      if(scanningOptions.scanMode == null){
-          scanningOptions.scanMode = 0;
+      // (ANDROID) Defaults to SCAN_MODE_LOW_POWER on android
+      if (scanningOptions.scanMode == null) {
+        scanningOptions.scanMode = 0;
       }
 
       bleManager.scan(serviceUUIDs, seconds, allowDuplicates, scanningOptions, (error) => {
@@ -279,6 +291,30 @@ class BleManager  {
       } else {
         return false;
       }
+    });
+  }
+
+  requestConnectionPriority(peripheralId, connectionPriority) {
+    return new Promise((fulfill, reject) => {
+      bleManager.requestConnectionPriority(peripheralId, connectionPriority, (error, status) => {
+        if (error) {
+          reject(error);
+        } else {
+          fulfill(status);
+        }
+      });
+    });
+  }
+
+  requestMTU(peripheralId, mtu) {
+    return new Promise((fulfill, reject) => {
+      bleManager.requestMTU(peripheralId, mtu, (error, mtu) => {
+        if (error) {
+          reject(error);
+        } else {
+          fulfill(mtu);
+        }
+      });
     });
   }
 }
